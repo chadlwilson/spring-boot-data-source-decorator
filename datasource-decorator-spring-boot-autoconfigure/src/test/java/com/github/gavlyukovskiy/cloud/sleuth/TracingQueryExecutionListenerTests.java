@@ -30,7 +30,6 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.cloud.sleuth.autoconfig.brave.BraveAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 
 import javax.sql.DataSource;
@@ -44,20 +43,22 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadLocalRandom;
 
+import static com.github.gavlyukovskiy.cloud.sleuth.ClassUtils.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
 class TracingQueryExecutionListenerTests {
 
     private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-            .withConfiguration(AutoConfigurations.of(
+            .withConfiguration(AutoConfigurations.of(nonNullClasses(
                     DataSourceAutoConfiguration.class,
                     DataSourceDecoratorAutoConfiguration.class,
-                    BraveAutoConfiguration.class,
+                    optionalClass("org.springframework.cloud.sleuth.autoconfig.brave.BraveAutoConfiguration"),
+                    optionalClass("org.springframework.cloud.sleuth.autoconfig.TraceAutoConfiguration"),
                     SleuthListenerAutoConfiguration.class,
                     TestSpanHandlerConfiguration.class,
                     PropertyPlaceholderAutoConfiguration.class
-            ))
+            )))
             .withPropertyValues("spring.datasource.initialization-mode=never",
                     "spring.datasource.url:jdbc:h2:mem:testdb-" + ThreadLocalRandom.current().nextInt(),
                     "spring.datasource.hikari.pool-name=test")

@@ -2,10 +2,18 @@ plugins {
     `java-library`
 }
 
+fun testSpringBootDep(): String {
+    return if (project.hasProperty("sleuth2")) "2.3.8.RELEASE" else project.extra["springBootVersion"].toString()
+}
+
+fun testSleuthDep(): String {
+    return if (project.hasProperty("sleuth2")) "2.2.7.RELEASE" else project.extra["sleuthVersion"].toString()
+}
+
 dependencies {
-    implementation("org.springframework.boot:spring-boot:${project.extra["springBootVersion"]}")
-    implementation("org.springframework.boot:spring-boot-autoconfigure:${project.extra["springBootVersion"]}")
-    implementation("org.springframework.boot:spring-boot-starter-jdbc:${project.extra["springBootVersion"]}")
+    compileOnly("org.springframework.boot:spring-boot:${project.extra["springBootVersion"]}")
+    compileOnly("org.springframework.boot:spring-boot-autoconfigure:${project.extra["springBootVersion"]}")
+    compileOnly("org.springframework.boot:spring-boot-starter-jdbc:${project.extra["springBootVersion"]}")
 
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor:${project.extra["springBootVersion"]}")
     annotationProcessor("org.projectlombok:lombok:1.18.8")
@@ -27,7 +35,8 @@ dependencies {
     compileOnly("org.springframework.cloud:spring-cloud-starter-sleuth:${project.extra["sleuthVersion"]}")
 
     testImplementation("com.h2database:h2:1.4.199")
-    testImplementation("org.springframework.boot:spring-boot-starter-test:${project.extra["springBootVersion"]}")
+    testImplementation("org.springframework.boot:spring-boot-starter-test:${testSpringBootDep()}")
+    testImplementation("org.springframework.boot:spring-boot-starter-jdbc:${testSpringBootDep()}")
 
     testImplementation("p6spy:p6spy:${project.extra["p6SpyVersion"]}")
     testImplementation("net.ttddyy:datasource-proxy:${project.extra["datasourceProxyVersion"]}")
@@ -37,7 +46,7 @@ dependencies {
     testImplementation("com.vladmihalcea.flexy-pool:flexy-tomcatcp:${project.extra["flexyPoolVersion"]}")
     testImplementation("com.vladmihalcea.flexy-pool:flexy-micrometer-metrics:${project.extra["flexyPoolVersion"]}")
 
-    testImplementation("org.springframework.cloud:spring-cloud-starter-sleuth:${project.extra["sleuthVersion"]}")
+    testImplementation("org.springframework.cloud:spring-cloud-starter-sleuth:${testSleuthDep()}")
     testImplementation("io.zipkin.brave:brave-tests:5.13.3")
 
     testImplementation("commons-dbcp:commons-dbcp:1.4")
